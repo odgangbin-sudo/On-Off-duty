@@ -1,46 +1,129 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Duty Manager EHSN</title>
+<style>
+        body { 
+            font-family: sans-serif; 
+            padding: 40px; 
+            max-width: 600px; 
+            margin: 0 auto;
+        }
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        label {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .form-group { 
+            margin-bottom: 25px; 
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.5rem;
+            margin-top: 10px;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+        .error { 
+            color: red; 
+            display: none; 
+            margin-top: 10px; 
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        .success { 
+            color: green; 
+            display: none; 
+            margin-top: 10px; 
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        .button-container {
+            display: flex;
+            gap: 20px;
+        }
+        button { 
+            flex: 1;
+            padding: 20px; 
+            font-size: 1.5rem; 
+            font-weight: bold;
+            cursor: pointer; 
+            border: none;
+            border-radius: 8px;
+            color: white;
+        }
+        .btn-on {
+            background-color: #28a745;
+        }
+        .btn-on:hover {
+            background-color: #218838;
+        }
+        .btn-off {
+            background-color: #dc3545;
+        }
+        .btn-off:hover {
+            background-color: #c82333;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Welcome, Type in your User ID to go on duty or off duty.</h1>
-<div class="form-group">
-        <label for="userId">Enter User ID:</label><br>
+    <h2>Duty Status Board</h2>
+    
+    <div class="form-group">
+        <label for="userId">Enter User ID:</label>
         <input type="text" id="userId" placeholder="Enter your ID">
-        <div id="errorMessage" class="error">Incorrect User ID.</div>
-        <div id="successMessage" class="success">Status sent successfully!</div>
+        <div id="errorMessage" class="error">❌ Incorrect User ID.</div>
+        <div id="successMessage" class="success">✅ Status sent successfully!</div>
     </div>
 
-    <button onclick="checkDuty('On Duty')">On Duty</button>
-    <button onclick="checkDuty('Off Duty')">Off Duty</button>
+    <div class="button-container">
+        <button class="btn-on" onclick="checkDuty('On Duty', '🟢')">On Duty</button>
+        <button class="btn-off" onclick="checkDuty('Off Duty', '🔴')">Off Duty</button>
+    </div>
 
     <script>
+        // 1. Define your 3 allowed User IDs here
+        const allowedIds = ["Tygo_1", "Kobe_2", "Lucas_3"];
+        
+        // 2. Insert your Discord Webhook URL here
+        const discordWebhookUrl = "https://discord.com/api/webhooks/1526715810213658714/a_Zl7OdYCqGasUCk6hPijThE-P0Z8XSGqNQiXIHqxMbwJD1whA-kMYaT_XelZe4pzvFe";
 
-        const allowedIds = ["Tygo_Owner1", "Kobe2", "Lucas3"];
-
-        const discordWebhookUrl = "https://discord.com/api/webhooks/1526712501293547681/SxOmse2iKhzRy_Ec2s0Fz1bPk1txMBXEIv22v_AUr5K9c_mlljCP4rTrFpNhQALYMvDW";
-
-        function checkDuty(status) {
+        function checkDuty(status, emoji) {
             const inputId = document.getElementById("userId").value.trim();
             const errorDiv = document.getElementById("errorMessage");
             const successDiv = document.getElementById("successMessage");
 
+            // Reset UI messages
             errorDiv.style.display = "none";
             successDiv.style.display = "none";
 
+            // Validate ID
             if (!allowedIds.includes(inputId)) {
                 errorDiv.style.display = "block";
                 return;
             }
 
-            sendToDiscord(inputId, status, successDiv);
+            // Get exact current date and time
+            const now = new Date();
+            const localDateTime = now.toLocaleString(); // Format: MM/DD/YYYY, HH:MM:SS AM/PM
+
+            // Send to Discord
+            sendToDiscord(inputId, status, emoji, localDateTime, successDiv);
         }
 
-        function sendToDiscord(userId, status, successDiv) {
+        function sendToDiscord(userId, status, emoji, timestamp, successDiv) {
+            // Using a Discord Embed format for a cleaner look
             const payload = {
-                content: `👤 **User ID:** ${userId} is now **${status}**`
+                embeds: [{
+                    title: `${emoji} Status Update: ${status}`,
+                    color: status === 'On Duty' ? 3066993 : 15158332, // Green or Red sidebar
+                    fields: [
+                        { name: "User ID", value: userId, inline: true },
+                        { name: "Time (Local)", value: timestamp, inline: true }
+                    ]
+                }]
             };
 
             fetch(discordWebhookUrl, {
@@ -51,7 +134,7 @@
             .then(response => {
                 if (response.ok) {
                     successDiv.style.display = "block";
-                    document.getElementById("userId").value = ""; // Clear input
+                    document.getElementById("userId").value = ""; // Clear input box
                 } else {
                     alert("Failed to send message to Discord.");
                 }
@@ -62,5 +145,6 @@
             });
         }
     </script>
+
 </body>
 </html>
