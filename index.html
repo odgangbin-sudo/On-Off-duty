@@ -44,7 +44,7 @@
 
         function sendToDiscord(userId, status, successDiv) {
             const payload = {
-                content: `👤 **User ID:** ${userId} is now 🟢 **${status}**`
+                content: `👤 **User ID:** ${userId} is now **${status}**`
             };
 
             fetch(discordWebhookUrl, {
