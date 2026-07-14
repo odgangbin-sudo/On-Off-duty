@@ -6,7 +6,12 @@
 <body>
 
 <h1>Welcome, Type in your User ID to go on duty or off duty.</h1>
-<p>This is a paragraph.</p>
+<form action="/submit-passwords" method="POST">
+        <input type="password" name="currentPassword" placeholder="Current Password" required>
+        <input type="password" name="newPassword" placeholder="New Password" required>
+        <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
+        <button type="submit">Update</button>
+    </form>
 
 </body>
 </html>
