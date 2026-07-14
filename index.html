@@ -6,7 +6,65 @@
 <body>
 
 <h1>Welcome, Type in your User ID to go on duty or off duty.</h1>
-<label for="pwd">User ID:</label>
-<input type="password" id="pwd" name="pwd">
+<div class="form-group">
+        <label for="userId">Enter User ID:</label><br>
+        <input type="text" id="userId" placeholder="Enter your ID">
+        <div id="errorMessage" class="error">Incorrect User ID.</div>
+        <div id="successMessage" class="success">Status sent successfully!</div>
+    </div>
+
+    <button onclick="checkDuty('On Duty')">On Duty</button>
+    <button onclick="checkDuty('Off Duty')">Off Duty</button>
+
+    <script>
+        // 1. Define your 3 allowed User IDs here
+        const allowedIds = ["001T", "002K", "003L"];
+        
+        // 2. Insert your Discord Webhook URL here
+        const discordWebhookUrl = "https://discord.com/api/webhooks/1526712501293547681/SxOmse2iKhzRy_Ec2s0Fz1bPk1txMBXEIv22v_AUr5K9c_mlljCP4rTrFpNhQALYMvDW";
+
+        function checkDuty(status) {
+            const inputId = document.getElementById("userId").value.trim();
+            const errorDiv = document.getElementById("errorMessage");
+            const successDiv = document.getElementById("successMessage");
+
+            // Reset messages
+            errorDiv.style.display = "none";
+            successDiv.style.display = "none";
+
+            // Validate ID
+            if (!allowedIds.includes(inputId)) {
+                errorDiv.style.display = "block";
+                return;
+            }
+
+            // Send to Discord if ID is correct
+            sendToDiscord(inputId, status, successDiv);
+        }
+
+        function sendToDiscord(userId, status, successDiv) {
+            const payload = {
+                content: `👤 **User ID:** ${userId} is now 🟢 **${status}**`
+            };
+
+            fetch(discordWebhookUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (response.ok) {
+                    successDiv.style.display = "block";
+                    document.getElementById("userId").value = ""; // Clear input
+                } else {
+                    alert("Failed to send message to Discord.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred while connecting to Discord.");
+            });
+        }
+    </script>
 </body>
 </html>
