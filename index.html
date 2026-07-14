@@ -17,10 +17,9 @@
     <button onclick="checkDuty('Off Duty')">Off Duty</button>
 
     <script>
-        // 1. Define your 3 allowed User IDs here
+
         const allowedIds = ["Tygo_Owner1", "Kobe2", "Lucas3"];
-        
-        // 2. Insert your Discord Webhook URL here
+
         const discordWebhookUrl = "https://discord.com/api/webhooks/1526712501293547681/SxOmse2iKhzRy_Ec2s0Fz1bPk1txMBXEIv22v_AUr5K9c_mlljCP4rTrFpNhQALYMvDW";
 
         function checkDuty(status) {
@@ -28,17 +27,14 @@
             const errorDiv = document.getElementById("errorMessage");
             const successDiv = document.getElementById("successMessage");
 
-            // Reset messages
             errorDiv.style.display = "none";
             successDiv.style.display = "none";
 
-            // Validate ID
             if (!allowedIds.includes(inputId)) {
                 errorDiv.style.display = "block";
                 return;
             }
 
-            // Send to Discord if ID is correct
             sendToDiscord(inputId, status, successDiv);
         }
 
